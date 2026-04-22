@@ -64,7 +64,7 @@ class Popup extends Component<{}, State> {
 
   private handleDomainClose = (domain: string) => {
     const that = this;
-    return new Promise(((resolve) => {
+    return new Promise<void>(((resolve) => {
       Modal.confirm({
         title: 'Delete',
         content: `Delete cookies under ${domain}`,

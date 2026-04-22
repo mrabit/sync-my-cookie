@@ -1,0 +1,45 @@
+name: Build Extension (Simple)
+
+on:
+  push:
+    branches: [ main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '14'
+        cache: 'yarn'
+        
+
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential python3-dev
+        
+    - name: Install dependencies
+      run: yarn install --network-timeout 600000
+      
+      
+    - name: Build extension
+      run: yarn build
+      
+    - name: Package extension
+      run: |
+        cd build
+        zip -r ../sync-my-cookie-extension.zip .
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sync-my-cookie-extension
+        path: sync-my-cookie-extension.zip
+        retention-days: 30

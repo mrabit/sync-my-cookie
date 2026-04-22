@@ -3,7 +3,7 @@ export function getCurrentTabUrl(): Promise<string> {
     chrome.tabs.query({
       active: true,
       currentWindow: true,
-    }, (tabs) => resolve(tabs[0].url));
+    }, (tabs) => resolve(tabs[0].url || ''));
   });
 }
 

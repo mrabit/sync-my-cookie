@@ -5,7 +5,7 @@ const style = require('./setting.module.scss');
 import { Modal } from 'antd';
 import { Button, Collapse, Icon, Input, message, Tooltip } from 'antd';
 
-import { KevastGist } from 'kevast-gist';
+import { KevastGist } from '../../utils/kevast-gist';
 import { setting } from '../../utils/store';
 
 interface Prop {
@@ -195,11 +195,12 @@ class Setting extends Component<Prop, State> {
     } catch (err) {
       Modal.error({
         title: 'Fail',
+        // @ts-ignore
         content: err.message,
       });
       return;
     }
-    await new Promise((resolve) => chrome.storage.local.clear(resolve));
+    await new Promise<void>((resolve) => chrome.storage.local.clear(resolve));
     await setting.set({
       token: this.state.token,
       password: this.state.password,

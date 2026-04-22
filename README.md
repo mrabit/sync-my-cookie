@@ -17,6 +17,8 @@ You can specify to sync cookies for any website, configure rules for `Auto Merge
   ```bash
   git clone https://github.com/Andiedie/sync-my-cookie.git
   cd sync-my-cookie
+  node -v         # >= 20
+  yarn -v         # 1.22.x
   yarn            # npm install
   yarn build      # npm run build
   ```
@@ -116,3 +118,4 @@ By using `HTTPS` and `AES-128-CBC`, this extension guarantees that your cookies 
 
 ## LICENSE
 MIT
+

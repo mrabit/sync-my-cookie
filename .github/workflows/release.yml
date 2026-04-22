@@ -1,0 +1,71 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0, v2.1.3, etc.
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build extension
+        run: yarn build
+
+      - name: Create build archive
+        run: |
+          cd build
+          zip -r ../sync-my-cookie-${{ github.ref_name }}.zip .
+          cd ..
+
+      - name: Get version from manifest
+        id: get_version
+        run: |
+          VERSION=$(cat manifest.json | grep -o '"version": "[^"]*' | grep -o '[^"]*$')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            sync-my-cookie-${{ github.ref_name }}.zip
+          body: |
+            ## Sync My Cookie ${{ github.ref_name }}
+            
+            **Version:** ${{ steps.get_version.outputs.version }}
+            
+            ### Installation
+            1. Download the `sync-my-cookie-${{ github.ref_name }}.zip` file
+            2. Extract the contents
+            3. Open Chrome and navigate to `chrome://extensions/`
+            4. Enable "Developer mode"
+            5. Click "Load unpacked" and select the extracted folder
+            
+            ### Changes
+            See the [commit history](https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}) for details.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-build
+          path: build/
+          retention-days: 30
